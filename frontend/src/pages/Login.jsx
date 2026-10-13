@@ -22,15 +22,10 @@ function Login() {
 
       const user = response.data;
 
-      // Check selected role
-      if (user.role !== role) {
-        alert("Selected role does not match this account.");
-        return;
-      }
-
       localStorage.setItem("user", JSON.stringify(user));
 
-      if (role === "ADMIN") {
+      const targetRole = user.role || role;
+      if (targetRole === "ADMIN") {
         navigate("/admin-dashboard");
       } else {
         navigate("/student-dashboard");
@@ -38,9 +33,13 @@ function Login() {
 
     } catch (error) {
 
-      console.error(error);
+      console.error("Login error:", error);
 
-      alert("Invalid email or password");
+      if (!error.response) {
+        alert("Connection failed: Backend server is unreachable at " + api.defaults.baseURL + ". Make sure your Spring Boot backend is running.");
+      } else {
+        alert(error.response.data?.message || "Invalid email or password. Please verify your credentials and selected role.");
+      }
 
     }
   };
