@@ -17,9 +17,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     /**
-     * Injected from application.properties -> app.cors.allowed-origin
-     * which itself reads the FRONTEND_URL environment variable.
-     * Defaults to localhost for local development.
+     * Extra specific origin from FRONTEND_URL env var (optional override).
+     * Pattern-based CORS below already covers all *.vercel.app origins.
      */
     @Value("${app.cors.allowed-origin:http://localhost:5173}")
     private String allowedOrigin;
@@ -48,13 +47,15 @@ public class SecurityConfig {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Allow both the configured production origin AND localhost for dev convenience
+        // Using patterns so ALL Vercel preview & production URLs are allowed.
+        // This handles pg-hazel.vercel.app, pg-management-seven-alpha.vercel.app,
+        // any future Vercel deployments, and localhost dev.
         configuration.setAllowedOriginPatterns(
                 List.of(
-                    allowedOrigin,
-                    "http://localhost:5173",
-                    "http://localhost:3000",
-                    "http://127.0.0.1:5173"
+                    "https://*.vercel.app",      // all Vercel deployments
+                    "http://localhost:*",         // local dev any port
+                    "http://127.0.0.1:*",        // local dev alternate
+                    allowedOrigin                 // explicit FRONTEND_URL override
                 )
         );
 
