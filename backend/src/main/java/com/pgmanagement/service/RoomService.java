@@ -36,15 +36,8 @@ public class RoomService {
             room.setStatus("AVAILABLE");
         }
 
-        if (room.getRent() == null) {
-            room.setRent(room.getRent());
-        }
-        if (room.getRoomType() == null) {
-            room.setRoomType(room.getRoomType());
-        }
-        if (room.getFacilities() == null) {
-            room.setFacilities(room.getFacilities());
-        }
+        // rent, roomType, facilities use computed defaults in getters when null —
+        // no need to store a default here, getters handle it correctly.
 
         return repository.save(room);
     }
